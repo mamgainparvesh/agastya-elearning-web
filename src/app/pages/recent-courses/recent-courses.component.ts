@@ -60,40 +60,24 @@ export class RecentCoursesComponent implements OnInit {
 
         //Rest of the courses
         this.restOfTheCourses.map((data) => {
-          if (data.topic && data.topic.id) {
-            this.contentService
-              .getTopicById(data.topic.id)
-              .subscribe((topic: any) => {
-                data.name = topic.categories[0].name + ' - ' + topic.name;
-              });
+          if (data.topic && data.topic.name) {
+            data.name = data.topic.categories[0].name + ' - ' + data.topic.name;
           }
         });
 
         //Course 1
-        if (this.course1.topic && this.course1.topic.id) {
-          this.contentService
-            .getTopicById(this.course1.topic.id)
-            .subscribe((topic: any) => {
-              this.course1.name = topic.categories[0].name + ' - ' + topic.name;
-            });
+        if (this.course1.topic && this.course1.topic.name) {
+          this.course1.name = this.course1.topic.categories[0].name + ' - ' + this.course1.topic.name;  
         }
 
         //Course 2
-        if (this.course2.topic && this.course2.topic.id) {
-          this.contentService
-            .getTopicById(this.course2.topic.id)
-            .subscribe((topic: any) => {
-              this.course2.name = topic.categories[0].name + ' - ' + topic.name;
-            });
+        if (this.course2.topic && this.course2.topic.name) {
+          this.course2.name = this.course2.topic.categories[0].name + ' - ' + this.course2.topic.name;
         }
 
         //Course 3
-        if (this.course3.topic && this.course3.topic.id) {
-          this.contentService
-            .getTopicById(this.course3.topic.id)
-            .subscribe((topic: any) => {
-              this.course3.name = topic.categories[0].name + ' - ' + topic.name;
-            });
+        if (this.course3.topic && this.course3.topic.name) {
+          this.course3.name = this.course3.topic.categories[0].name + ' - ' + this.course3.topic.name;  
         }
       }
     });

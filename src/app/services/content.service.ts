@@ -17,7 +17,7 @@ export class ContentService {
 
   getRecentSubTopic() {
     return this.httpClient.get(
-      CONSTANTS.CONTENT_SERVICE_URL + 'sub-topics?_sort=created_at:DESC'
+      CONSTANTS.CONTENT_SERVICE_URL + 'sub-topics?_sort=created_at:DESC&_limit=10'
     );
   }
 
