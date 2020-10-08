@@ -24,6 +24,9 @@ export class DialogBoxComponent implements OnInit {
       if(data.type == 'scorm'){
         this.dialogRef.close();
         window.open(data.url, "_blank,",this.params);
+      } else if(data.type == 'feedback'){
+        this.dialogRef.close();
+        window.open(data.url, "_blank,",this.params);
       }
 
      
