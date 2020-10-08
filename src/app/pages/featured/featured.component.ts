@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { Category } from 'src/app/models/category.model';
 import CONSTANTS from '../../constants';
-// import gsap from 'gsap';
+import gsap from 'gsap';
 import { ContentService } from 'src/app/services/content.service';
 import { SubTopic } from 'src/app/models/sub-topic.model';
 
