@@ -130,6 +130,8 @@ export class CourseDetailPageComponent implements OnInit {
 
   
   isEligibleAfterFiltering(content:Content){
+    if(this.isUserLogged && content.audience == 'teacherExclusive')
+      return true;
     if (content.audience != this.audienceFilter && content.audience != 'both')
       return false;  
     if (!this.isClassEligible(content.classes))
@@ -164,10 +166,28 @@ export class CourseDetailPageComponent implements OnInit {
     this.intermediaryContent = [];
     this.advanceContent = [];
 
+    let feedbacks:Content[] = [];
+
     for(var content of this.subTopic.contents){
+      if(this.isFeedbackContent(content.type)){
+        feedbacks.push(content);
+      }else if(this.isEligibleAfterFiltering(content)){
+        this.assignContentByLevel(content)
+      }
+    }
+
+    for(var content of feedbacks){
       if(this.isEligibleAfterFiltering(content)){
         this.assignContentByLevel(content)
       }
+    }
+  }
+
+  isFeedbackContent(type: string):boolean{
+    if (type == "feedback"){
+      return true;
+    } else {
+      return false;
     }
   }
 
