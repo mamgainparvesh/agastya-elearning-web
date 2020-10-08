@@ -2,6 +2,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ContentService } from '../../services/content.service';
 import { Course } from '../../models/course.model';
 import { SubTopic } from '../../models/sub-topic.model';
+import { AuthService } from 'src/app/services/auth.service';
+import {
+  filterSubTopicExclusive,
+  filterSubTopicNormal,
+} from 'src/app/menu/menu.component';
 
 @Component({
   selector: 'recent-courses',
@@ -20,7 +25,10 @@ export class RecentCoursesComponent implements OnInit {
   public restOfTheCoursesPlaceholder: Array<any> = new Array(6);
   public restOfTheCoursesMobile: SubTopic[];
 
-  constructor(private contentService: ContentService) {}
+  constructor(
+    private contentService: ContentService,
+    private auth: AuthService
+  ) {}
 
   slice(str: string, len: number = 25) {
     return str.length > len ? str.slice(0, len + 1) + '..' : str;
@@ -30,72 +38,83 @@ export class RecentCoursesComponent implements OnInit {
     this.restOfTheCoursesPlaceholder.fill(1);
 
     this.contentService.getRecentSubTopic().subscribe((data: any) => {
-      if (data) {
-        this.subTopics = data;
-
-        if (this.subTopics.length > 10) {
-          this.subTopics = this.subTopics.slice(0, 10);
-        } else {
-          this.subTopics = this.subTopics.slice(0, this.subTopics.length);
-          this.subTopics.reverse;
-          let countForFillPending = 10 - this.subTopics.length;
-          for (let i = 0; i < countForFillPending; i++) {
-            this.subTopics.push(this.subTopics[0]);
+      this.auth.currentUser.subscribe((user) => {
+        if (data) {
+          this.subTopics = data;
+          if (user) {
+            this.subTopics = this.subTopics.filter(filterSubTopicExclusive);
+          } else {
+            this.subTopics = this.subTopics.filter(filterSubTopicNormal);
           }
-        }
+          if (this.subTopics.length > 10) {
+            this.subTopics = this.subTopics.slice(0, 10);
+          } else {
+            this.subTopics = this.subTopics.slice(0, this.subTopics.length);
+            this.subTopics.reverse;
+            let countForFillPending = 10 - this.subTopics.length;
+            for (let i = 0; i < countForFillPending; i++) {
+              this.subTopics.push(this.subTopics[0]);
+            }
+          }
 
-        // Reset the Description
-        this.subTopics.map((data) => {
-          data.description = data.name;
-        });
+          // console.log('recent subt:', this.subTopics);
 
-        //Get Top 3 Courses
-        this.course1 = this.subTopics[0];
-        this.course2 = this.subTopics[1];
-        this.course3 = this.subTopics[2];
+          // Reset the Description
+          this.subTopics.map((data) => {
+            data.description = data.name;
+          });
 
-        //Courses for rest of the page & mobile
-        this.restOfTheCourses = this.subTopics.slice(3, 9);
-        this.restOfTheCoursesMobile = this.subTopics.slice(0, 6);
+          //Get Top 3 Courses
+          this.course1 = this.subTopics[0];
+          this.course2 = this.subTopics[1];
+          this.course3 = this.subTopics[2];
 
-        //Rest of the courses
-        this.restOfTheCourses.map((data) => {
-          if (data.topic && data.topic.id) {
+          //Courses for rest of the page & mobile
+          this.restOfTheCourses = this.subTopics.slice(3, 9);
+          this.restOfTheCoursesMobile = this.subTopics.slice(0, 6);
+
+          //Rest of the courses
+          this.restOfTheCourses.map((data) => {
+            if (data.topic && data.topic.id) {
+              this.contentService
+                .getTopicById(data.topic.id)
+                .subscribe((topic: any) => {
+                  data.name = topic.categories[0].name + ' - ' + topic.name;
+                });
+            }
+          });
+
+          //Course 1
+          if (this.course1.topic && this.course1.topic.id) {
             this.contentService
-              .getTopicById(data.topic.id)
+              .getTopicById(this.course1.topic.id)
               .subscribe((topic: any) => {
-                data.name = topic.categories[0].name + ' - ' + topic.name;
+                this.course1.name =
+                  topic.categories[0].name + ' - ' + topic.name;
               });
           }
-        });
 
-        //Course 1
-        if (this.course1.topic && this.course1.topic.id) {
-          this.contentService
-            .getTopicById(this.course1.topic.id)
-            .subscribe((topic: any) => {
-              this.course1.name = topic.categories[0].name + ' - ' + topic.name;
-            });
-        }
+          //Course 2
+          if (this.course2.topic && this.course2.topic.id) {
+            this.contentService
+              .getTopicById(this.course2.topic.id)
+              .subscribe((topic: any) => {
+                this.course2.name =
+                  topic.categories[0].name + ' - ' + topic.name;
+              });
+          }
 
-        //Course 2
-        if (this.course2.topic && this.course2.topic.id) {
-          this.contentService
-            .getTopicById(this.course2.topic.id)
-            .subscribe((topic: any) => {
-              this.course2.name = topic.categories[0].name + ' - ' + topic.name;
-            });
+          //Course 3
+          if (this.course3.topic && this.course3.topic.id) {
+            this.contentService
+              .getTopicById(this.course3.topic.id)
+              .subscribe((topic: any) => {
+                this.course3.name =
+                  topic.categories[0].name + ' - ' + topic.name;
+              });
+          }
         }
-
-        //Course 3
-        if (this.course3.topic && this.course3.topic.id) {
-          this.contentService
-            .getTopicById(this.course3.topic.id)
-            .subscribe((topic: any) => {
-              this.course3.name = topic.categories[0].name + ' - ' + topic.name;
-            });
-        }
-      }
+      });
     });
   }
 

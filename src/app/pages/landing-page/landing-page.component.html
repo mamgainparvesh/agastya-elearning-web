@@ -7,6 +7,12 @@
     (animationComplete)="bannerAnimationComplete($event)"
     [vh]="vh"
   ></app-banner>
-  <app-featured [categories]="categories" [vh]="vh"></app-featured>
+  <app-featured [vh]="vh"></app-featured>
+
   <recent-courses></recent-courses>
+  <app-featured
+    [title]="'Most Popular'"
+    [type]="'popular'"
+    [vh]="vh"
+  ></app-featured>
 </div>

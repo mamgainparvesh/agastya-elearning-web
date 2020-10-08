@@ -27,6 +27,8 @@ export class ErrorInterceptor implements HttpInterceptor {
           return throwError(new Error('Invalid Username or Password'));
           // location.reload(true);
         }
+        console.log('Error: ', err);
+
         const error = err.error.message || err.statusText;
         return throwError(error);
       })

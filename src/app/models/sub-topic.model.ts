@@ -11,4 +11,7 @@ export interface SubTopic {
   updated_at: Date;
   image: Media;
   contents: Content[];
+  views: number;
+  anyNormalContent: boolean;
+  anyExclusiveContent: boolean;
 }
