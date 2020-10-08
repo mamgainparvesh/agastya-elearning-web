@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CurrentUser } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -14,12 +15,16 @@ export class LoginComponent implements OnInit {
   password: string;
   error: any;
   loginForm: any;
+  returnUrl: any;
 
   constructor(
     public dialogRef: MatDialogRef<LoginComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private auth: AuthService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    // private route: ActivatedRoute,
+
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -27,6 +32,8 @@ export class LoginComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', Validators.required],
     });
+
+    this.returnUrl = '/';
   }
 
   onCancel() {
@@ -40,6 +47,7 @@ export class LoginComponent implements OnInit {
     this.auth.login(username, password).subscribe(
       (user) => {
         this.dialogRef.close();
+        this.router.navigate([this.returnUrl]);
       },
       (error) => {
         console.log('Login Error: ', error);

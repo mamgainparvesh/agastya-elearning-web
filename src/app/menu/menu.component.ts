@@ -4,6 +4,40 @@ import { Category } from '../models/category.model';
 import { closeMenu } from '../header/menuAnimations.js';
 import { Topic } from '../models/topic.model';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AuthService } from '../services/auth.service';
+import { SubTopic } from '../models/sub-topic.model';
+
+export const filterCatNormal = (cat: Category) => {
+  const filteredTopics = cat.topics.filter(filterTopicNormal);
+  cat.topics = filteredTopics;
+  return filteredTopics.length ? true : false;
+};
+
+export const filterTopicNormal = (topic: Topic) => {
+  const filteredSubt = topic.subTopics.filter(filterSubTopicNormal);
+  topic.subTopics = filteredSubt;
+  return filteredSubt.length > 0;
+};
+
+export const filterSubTopicNormal = (subTopic: SubTopic) => {
+  return subTopic.anyNormalContent;
+};
+
+export const filterCatExclusive = (cat: Category) => {
+  const filteredTopics = cat.topics.filter(filterTopicExclusive);
+  cat.topics = filteredTopics;
+  return filteredTopics.length ? true : false;
+};
+
+export const filterTopicExclusive = (topic) => {
+  const filteredSubt = topic.subTopics.filter(filterSubTopicExclusive);
+  topic.subTopics = filteredSubt;
+  return filteredSubt.length > 0;
+};
+
+export const filterSubTopicExclusive = (subTopic: SubTopic) => {
+  return subTopic.anyExclusiveContent;
+};
 
 @Component({
   selector: 'app-menu',
@@ -21,7 +55,8 @@ export class MenuComponent implements OnInit {
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private contentService: ContentService
+    private contentService: ContentService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -32,11 +67,34 @@ export class MenuComponent implements OnInit {
           this.handSet = true;
         }
       });
+
     this.contentService.getCategories().subscribe((data) => {
-      this.categories = data;
-      this.category = this.categories[0];
-      this.topic = this.categories[0].topics[0];
+      this.auth.currentUser.subscribe((user) => {
+        //Deep Copy Hack
+        const cats = JSON.parse(JSON.stringify(data));
+
+        if (user) {
+          this.categories = cats.filter(filterCatExclusive);
+        } else {
+          this.categories = cats.filter(filterCatNormal);
+        }
+
+        this.category = this.categories[0];
+        this.topic = this.categories[0].topics[0];
+      });
     });
+  }
+
+  ngOnChanges() {
+    // this.contentService.getCategories().subscribe((data) => {
+    //   if (this.auth.currentUserValue) {
+    //     this.categories = data.filter(filterCat);
+    //   } else {
+    //     this.categories = data;
+    //   }
+    //   this.category = this.categories[0];
+    //   this.topic = this.categories[0].topics[0];
+    // });
   }
 
   closeMenuAnimation() {

@@ -7,6 +7,7 @@ import { LoginComponent } from '../auth/login/login.component';
 import { AuthService } from '../services/auth.service';
 import { Observable } from 'rxjs';
 import { CurrentUser } from '../models/user.model';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -28,7 +29,8 @@ export class HeaderComponent implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private viewPortRuler: ViewportRuler,
     public dialog: MatDialog,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -134,5 +136,8 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+    // console.log(this.router);
+
+    this.router.navigate(['/landing']);
   }
 }

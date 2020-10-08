@@ -13,9 +13,14 @@ import {
 } from '@angular/core';
 import { Category } from 'src/app/models/category.model';
 import CONSTANTS from '../../constants';
-// import gsap from 'gsap';
+import gsap from 'gsap';
 import { ContentService } from 'src/app/services/content.service';
 import { SubTopic } from 'src/app/models/sub-topic.model';
+import { AuthService } from 'src/app/services/auth.service';
+import {
+  filterSubTopicExclusive,
+  filterSubTopicNormal,
+} from 'src/app/menu/menu.component';
 
 @Component({
   selector: 'app-featured',
@@ -34,9 +39,8 @@ export class FeaturedComponent {
 
   @Input()
   vh: number;
-
   @Input()
-  categories: Category[];
+  type: string;
   displayedTopics: SubTopic[];
   subTopics: SubTopic[];
   placeholder = ['', '', ''];
@@ -47,26 +51,57 @@ export class FeaturedComponent {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private contentService: ContentService
+    private contentService: ContentService,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
-    this.contentService.getFeaturedSubTopic().subscribe((data: any) => {
-      if (data[0].subTopics) {
-        data.sort(function (a, b) {
-          return a.id - b.id;
+    if (this.type === 'popular') {
+      this.contentService.getPopularSubTopic().subscribe((data: any) => {
+        // console.log(data);
+
+        this.auth.currentUser.subscribe((user) => {
+          this.subTopics = user
+            ? data.filter(filterSubTopicExclusive)
+            : data.filter(filterSubTopicNormal);
+          // console.log('featured popular: ', this.subTopics);
+
+          this.start = 0;
+          this.end = this.subTopics.length;
+          this.setTopicsDisplay();
         });
+      });
+    } else {
+      this.contentService.getFeaturedSubTopic().subscribe((data: any) => {
+        // console.log(data);
 
-        this.subTopics = [];
-        for (let featuredSubTopic of data) {
-          this.subTopics = this.subTopics.concat(featuredSubTopic.subTopics);
-        }
+        this.auth.currentUser.subscribe((user) => {
+          if (data[0].subTopics) {
+            data.sort(function (a, b) {
+              return a.id - b.id;
+            });
 
-        this.start = 0;
-        this.end = this.subTopics.length;
-        this.setTopicsDisplay();
-      }
-    });
+            this.subTopics = [];
+            for (let featuredSubTopic of data) {
+              let subt;
+              if (user)
+                subt = featuredSubTopic.subTopics.filter(
+                  filterSubTopicExclusive
+                );
+              else
+                subt = featuredSubTopic.subTopics.filter(filterSubTopicNormal);
+              this.subTopics = this.subTopics.concat(subt);
+            }
+
+            // console.log('featured: ', this.subTopics);
+
+            this.start = 0;
+            this.end = this.subTopics.length;
+            this.setTopicsDisplay();
+          }
+        });
+      });
+    }
   }
 
   ngAfterViewInit() {
@@ -139,7 +174,7 @@ export class FeaturedComponent {
     return subTopic.languages.length > 1
       ? subTopic.languages.sort().slice(0, 2).join(' | ') +
           ' | ' +
-          (subTopic.languages.length - 1) +
+          (subTopic.languages.length - 2) +
           ' Other languages'
       : subTopic?.languages[0];
   }

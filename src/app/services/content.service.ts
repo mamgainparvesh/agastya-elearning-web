@@ -21,6 +21,12 @@ export class ContentService {
     );
   }
 
+  getPopularSubTopic() {
+    return this.httpClient.get(
+      CONSTANTS.CONTENT_SERVICE_URL + 'sub-topics?_sort=views:DESC'
+    );
+  }
+
   getFeaturedSubTopic() {
     return this.httpClient.get(
       CONSTANTS.CONTENT_SERVICE_URL + 'featured-sub-topics'
@@ -77,7 +83,8 @@ export class ContentService {
     this.httpClient
       .post<any>(CONSTANTS.CONTENT_SERVICE_URL + 'teacher-contents', {
         teacher,
-        content
-    }).subscribe();
+        content,
+      })
+      .subscribe();
   }
 }
