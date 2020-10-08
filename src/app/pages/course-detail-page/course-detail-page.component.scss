@@ -11,13 +11,13 @@
         position: relative;
         height: 25vh;
 
+        background: black;
+
         .banner-image {
           width: 100%;
           height: 100%;
-          opacity: 0.8;
           object-fit: cover;
-          background: grey;
-
+          opacity: 0.65;
           @include media("<=phone") {
             width: 100vw;
             margin-left: -16px;
@@ -25,7 +25,7 @@
         }
 
         .text {
-          color: black;
+          color: $white;
           position: absolute;
           bottom: 4vh;
           left: 2vw;
@@ -36,13 +36,22 @@
 
           .topic-name {
             text-transform: uppercase;
-            font-size: large;
+            font-size: 1em;
+            letter-spacing: 0.2em;
+            margin: 5px 0;
           }
 
           .subtopic-name {
             font-size: xx-large;
             text-transform: capitalize;
             line-height: normal;
+            margin: 5px 0;
+          }
+
+          .language-name {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
           }
         }
       }
@@ -78,15 +87,14 @@
         }
 
         .drawer {
-          border:none;
+          border: none;
           padding: 5%;
-          border:1px solid darkgrey;
-        
+          border: 1px solid darkgrey;
+
           .mobile-filter-panel {
             display: flex;
             flex-direction: column;
-            
-          
+
             .mobile-btn-group {
               height: fit-content;
               width: fit-content;
@@ -103,7 +111,7 @@
           }
         }
 
-        .drawerContent{
+        .drawerContent {
           display: flex;
           flex-direction: row;
           justify-content: space-between;

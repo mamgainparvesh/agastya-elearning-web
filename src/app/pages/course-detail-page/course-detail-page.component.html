@@ -2,116 +2,183 @@
   <div class="container">
     <div class="row">
       <div class="course">
-         <div class="heading">
-            <img id="bannerImage" class="banner-image" src="/assets/images/placeholder.png">  
-            <div class="text">
-              <div class="topic-name">{{topicName}}</div>
-              <div class="subtopic-name">{{subTopicName}}</div>
+        <div class="heading">
+          <img
+            id="bannerImage"
+            class="banner-image"
+            src="/assets/images/placeholder.png"
+          />
+          <div class="text">
+            <div class="topic-name">{{ topicName }}</div>
+            <div class="subtopic-name">{{ subTopicName }}</div>
+            <div class="language-name">
+              {{
+                languages.length > 2
+                  ? languages.slice(0, 2).join(" | ") +
+                    " | Other " +
+                    (languages.length - 2) +
+                    " languages"
+                  : languages.join(" | ")
+              }}
             </div>
-         </div>
-
-         <div class="main-filter-panel">
-          <div class='main-filter'>
-             <mat-form-field appearance="fill">
-                <mat-label>Language</mat-label>
-                <mat-select [(ngModel)]="languageFilter" (selectionChange)="distributeContentByLevel()">  
-                  <mat-option *ngFor="let language of languages" [value]="language">
-                    {{language}}
-                  </mat-option>
-                </mat-select>
-             </mat-form-field>
- 
-             <mat-form-field  appearance="fill">
-                <mat-label>Class</mat-label>
-                <mat-select [(ngModel)]="classFilter" (selectionChange)="distributeContentByLevel()">  
-                  <mat-option *ngFor="let class of classes" [value]="class">
-                    {{class}}
-                  </mat-option>
-                </mat-select>
-             </mat-form-field>
           </div>
-          <mat-button-toggle-group *ngIf="!isUserLogged" class="main-btn-group" [(ngModel)]="audienceFilter"  (change)="distributeContentByLevel()" >
-             <mat-button-toggle value="student">Student</mat-button-toggle>
-             <mat-button-toggle value="teacher">Teacher</mat-button-toggle>
+        </div>
+
+        <div class="main-filter-panel">
+          <div class="main-filter">
+            <mat-form-field appearance="fill">
+              <mat-label>Language</mat-label>
+              <mat-select
+                [(ngModel)]="languageFilter"
+                (selectionChange)="distributeContentByLevel()"
+              >
+                <mat-option
+                  *ngFor="let language of languages"
+                  [value]="language"
+                >
+                  {{ language }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Class</mat-label>
+              <mat-select
+                [(ngModel)]="classFilter"
+                (selectionChange)="distributeContentByLevel()"
+              >
+                <mat-option *ngFor="let class of classes" [value]="class">
+                  {{ class }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <mat-button-toggle-group
+            *ngIf="!isUserLogged"
+            class="main-btn-group"
+            [(ngModel)]="audienceFilter"
+            (change)="distributeContentByLevel()"
+          >
+            <mat-button-toggle value="student">Student</mat-button-toggle>
+            <mat-button-toggle value="teacher">Teacher</mat-button-toggle>
           </mat-button-toggle-group>
-       </div>
-      
+        </div>
+
         <mat-drawer-container id="mobile-nav-panel" class="mobile-nav-panel">
           <mat-drawer #drawer mode="side" class="drawer">
             <div class="mobile-filter-panel">
-              <mat-button-toggle-group *ngIf="!isUserLogged" class="mobile-btn-group" [(ngModel)]="audienceFilter"  (change)="distributeContentByLevel()" >
+              <mat-button-toggle-group
+                *ngIf="!isUserLogged"
+                class="mobile-btn-group"
+                [(ngModel)]="audienceFilter"
+                (change)="distributeContentByLevel()"
+              >
                 <mat-button-toggle value="student">Student</mat-button-toggle>
                 <mat-button-toggle value="teacher">Teacher</mat-button-toggle>
-             </mat-button-toggle-group>
-              <div class='mobile-filter'>
-                 <mat-form-field appearance="fill"> 
-                    <mat-label>Language</mat-label>
-                    <mat-select [(ngModel)]="languageFilter" (selectionChange)="distributeContentByLevel()">  
-                      <mat-option *ngFor="let language of languages" [value]="language">
-                        {{language}}
-                      </mat-option>
-                    </mat-select>
-                 </mat-form-field>
-     
-                 <mat-form-field appearance="fill">
-                    <mat-label>Class</mat-label>
-                    <mat-select [(ngModel)]="classFilter" (selectionChange)="distributeContentByLevel()">  
-                      <mat-option *ngFor="let class of classes" [value]="class">
-                        {{class}}
-                      </mat-option>
-                    </mat-select>
-                 </mat-form-field>
+              </mat-button-toggle-group>
+              <div class="mobile-filter">
+                <mat-form-field appearance="fill">
+                  <mat-label>Language</mat-label>
+                  <mat-select
+                    [(ngModel)]="languageFilter"
+                    (selectionChange)="distributeContentByLevel()"
+                  >
+                    <mat-option
+                      *ngFor="let language of languages"
+                      [value]="language"
+                    >
+                      {{ language }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Class</mat-label>
+                  <mat-select
+                    [(ngModel)]="classFilter"
+                    (selectionChange)="distributeContentByLevel()"
+                  >
+                    <mat-option *ngFor="let class of classes" [value]="class">
+                      {{ class }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
-              <button class="closeBtn"mat-raised-button (click)="onNavBarClose()">Close</button>
-           </div>
+              <button
+                class="closeBtn"
+                mat-raised-button
+                (click)="onNavBarClose()"
+              >
+                Close
+              </button>
+            </div>
           </mat-drawer>
           <mat-drawer-content id="navCloseButton" class="drawerContent">
             <mat-chip-list class="chips">
-              <mat-chip>{{languageFilter | titlecase}}</mat-chip>
-              <mat-chip>{{classFilter | titlecase}}</mat-chip>
-              <mat-chip *ngIf="!isUserLogged">{{audienceFilter | titlecase}}</mat-chip>
+              <mat-chip>{{ languageFilter | titlecase }}</mat-chip>
+              <mat-chip>{{ classFilter | titlecase }}</mat-chip>
+              <mat-chip *ngIf="!isUserLogged">{{
+                audienceFilter | titlecase
+              }}</mat-chip>
             </mat-chip-list>
-            <button  mat-raised-button (click)="onNavBarOpen()">Filter</button>
-          </mat-drawer-content> 
-         </mat-drawer-container>  
+            <button mat-raised-button (click)="onNavBarOpen()">Filter</button>
+          </mat-drawer-content>
+        </mat-drawer-container>
 
-         <div *ngIf="!isUserLogged">
-          <div class="levels" *ngFor="let level of levels"> 
-            <mat-expansion-panel   *ngIf="getContentByLevel(level).length>0" [expanded]="true">
-               <mat-expansion-panel-header >
-                 <mat-panel-title>
-                   <div class="level">{{level}}</div>
-                 </mat-panel-title>
-                </mat-expansion-panel-header>
-             
-                <div class="content" *ngFor="let content of getContentByLevel(level)">
-                  <button class="content-btn" mat-button  (click)="onClick($event,content.data)">
-                     <fa-icon class="logo" [icon]="content.icon"></fa-icon>  
-                     <span>{{content.data.name}}</span>
-                  </button>
-               </div>
-             </mat-expansion-panel>
-         </div>
-         </div>
-         
-         <div *ngIf="isUserLogged" class="levels"> 
-          <mat-expansion-panel [expanded]="true">
-              <mat-expansion-panel-header >
+        <div *ngIf="!isUserLogged">
+          <div class="levels" *ngFor="let level of levels">
+            <mat-expansion-panel
+              *ngIf="getContentByLevel(level).length > 0"
+              [expanded]="true"
+            >
+              <mat-expansion-panel-header>
                 <mat-panel-title>
-                  <div class="level">Topics</div>
+                  <div class="level">{{ level }}</div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div *ngFor="let level of levels">
-                <div class="content" *ngFor="let content of getContentByLevel(level)">
-                  <button class="content-btn" mat-button  (click)="onClick($event,content.data)">
-                     <fa-icon class="logo" [icon]="content.icon"></fa-icon>  
-                     <span>{{content.data.name}}</span>
-                  </button>
-               </div>
+
+              <div
+                class="content"
+                *ngFor="let content of getContentByLevel(level)"
+              >
+                <button
+                  class="content-btn"
+                  mat-button
+                  (click)="onClick($event, content.data)"
+                >
+                  <fa-icon class="logo" [icon]="content.icon"></fa-icon>
+                  <span>{{ content.data.name }}</span>
+                </button>
               </div>
-           </mat-expansion-panel>
-       </div>
+            </mat-expansion-panel>
+          </div>
+        </div>
+
+        <div *ngIf="isUserLogged" class="levels">
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <div class="level">Topics</div>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div *ngFor="let level of levels">
+              <div
+                class="content"
+                *ngFor="let content of getContentByLevel(level)"
+              >
+                <button
+                  class="content-btn"
+                  mat-button
+                  (click)="onClick($event, content.data)"
+                >
+                  <fa-icon class="logo" [icon]="content.icon"></fa-icon>
+                  <span>{{ content.data.name }}</span>
+                </button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </div>
+      </div>
     </div>
   </div>
-</div>  
-
+</div>
