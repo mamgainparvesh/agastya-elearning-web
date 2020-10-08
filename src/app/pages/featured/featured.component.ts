@@ -171,11 +171,11 @@ export class FeaturedComponent {
   }
 
   langText(subTopic) {
-    return subTopic.languages.length > 1
+    return subTopic.languages.length > 2
       ? subTopic.languages.sort().slice(0, 2).join(' | ') +
           ' | ' +
           (subTopic.languages.length - 2) +
           ' Other languages'
-      : subTopic?.languages[0];
+      : subTopic.languages.sort().slice(0, 2).join(' | ');
   }
 }
