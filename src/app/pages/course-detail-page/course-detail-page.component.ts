@@ -44,8 +44,6 @@ export class CourseDetailPageComponent implements OnInit {
   public levels: string[];
   public languages: string[];
   public classes: string[];
-  public iconType: string[];
-
 
   @ViewChild('drawer') sidenav: MatSidenav;
   
@@ -66,7 +64,6 @@ export class CourseDetailPageComponent implements OnInit {
       this.contentService.getSubTopicById(parseInt(params['id'])).subscribe(subTopic => {
         this.subTopic = subTopic;
         this.setBanner();
-        this.setDefaultFilters()
         this.loadFilterValues();
         this.distributeContentByLevel();
       }); 
@@ -75,6 +72,7 @@ export class CourseDetailPageComponent implements OnInit {
 
   setPageforRegisteredUser(){
       this.isUserLogged = true;
+      this.audienceFilter = 'teacherExclusive';
   }
 
   setDefaultPageState(){
@@ -94,13 +92,6 @@ export class CourseDetailPageComponent implements OnInit {
     this.levels = ['basic','intermediary','advanced'];
     this.languages = [];
     this.classes = [];
-    this.iconType = ['scorm','pdf','youtube','word'];
-  }
-
-  setDefaultFilters(){
-    this.languageFilter = "English";
-    this.audienceFilter = "student";
-    this.classFilter = "All";
   }
 
   ngOnInit(): void {
@@ -128,20 +119,6 @@ export class CourseDetailPageComponent implements OnInit {
     this.classes = Array.from<string>(classes).sort();
   }
 
-  
-  isEligibleAfterFiltering(content:Content){
-    if(this.isUserLogged && content.audience == 'teacherExclusive')
-      return true;
-    if (content.audience != this.audienceFilter && content.audience != 'both')
-      return false;  
-    if (!this.isClassEligible(content.classes))
-      return false;  
-    if (content.language != this.languageFilter)
-      return false;     
-
-    return true;
-  }
-
   isClassEligible(classes:Class[]):boolean{
     for(var cls of classes){
       if(cls.name == this.classFilter || this.classFilter == 'All')
@@ -166,10 +143,39 @@ export class CourseDetailPageComponent implements OnInit {
     this.intermediaryContent = [];
     this.advanceContent = [];
 
-    let feedbacks:Content[] = [];
+    if(this.isUserLogged) {
+      this.distributeContentIfUserLoggedIn();
+    } else {
+      this.distributeContentIfUserNotLoggedIn();
+    }
+  }
 
+
+  distributeContentIfUserLoggedIn(){
+    let feedbacks:Content[] = [];
+    
     for(var content of this.subTopic.contents){
-      if(this.isFeedbackContent(content.type)){
+      if(content.audience == 'teacherExclusive') {
+        if(content.type == 'feedback'){
+          feedbacks.push(content);
+        }else if(this.isEligibleAfterFilteringForLoggedInUser(content)){
+          this.assignContentByLevel(content)
+        }
+      }
+    }
+
+    for(var content of feedbacks){
+      if(this.isEligibleAfterFilteringForLoggedInUser(content)){
+        this.assignContentByLevel(content)
+      }
+    }
+  }
+
+  distributeContentIfUserNotLoggedIn(){
+    let feedbacks:Content[] = [];
+    
+    for(var content of this.subTopic.contents){
+      if(content.type == 'feedback'){
         feedbacks.push(content);
       }else if(this.isEligibleAfterFiltering(content)){
         this.assignContentByLevel(content)
@@ -183,12 +189,26 @@ export class CourseDetailPageComponent implements OnInit {
     }
   }
 
-  isFeedbackContent(type: string):boolean{
-    if (type == "feedback"){
-      return true;
-    } else {
-      return false;
-    }
+  isEligibleAfterFilteringForLoggedInUser(content:Content){
+    if (content.audience != this.audienceFilter) 
+      return false;    
+    if (!this.isClassEligible(content.classes))
+      return false;  
+    if (content.language != this.languageFilter)
+      return false;     
+
+    return true;
+  }
+
+  isEligibleAfterFiltering(content:Content){
+    if (content.audience != this.audienceFilter && content.audience != 'both')
+        return false;  
+    if (!this.isClassEligible(content.classes))
+      return false;  
+    if (content.language != this.languageFilter)
+      return false;     
+
+    return true;
   }
 
   getContentByLevel(level:string):CustomContent[]{
